@@ -1,9 +1,8 @@
 #!/bin/sh
 set -e
 
-# ۱. پالایش پورت کانتینر
-PORT="${PORT:-21544}"
-PORT="$(echo "$PORT" | tr -d '[:space:]')"
+# ۱. تثبیت پورت داخلی روی ۲۱۵۴۴ (مطابق با TCP Proxy در ریل‌وی)
+PORT="21544"
 
 # ۲. کلید احراز هویت Fake-TLS (پیش‌فرض: www.cloudflare.com)
 KEY="${AUTH_KEY:-${SECRET:-eed34e5658e41a995252834b92b6a95f7777772e636c6f7564666c6172652e636f6d}}"
