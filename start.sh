@@ -11,10 +11,11 @@ KEY="$(echo "$KEY" | tr -d '[:space:]' | tr -d '\r' | tr -d '\n')"
 
 # لاگ‌های استتار شده
 echo "=========================================================="
-echo " [System] Microservice Gateway Daemon v2.4 (Debug Mode)"
+echo " [System] Microservice Gateway Daemon v2.4 (IPv4 Mode)"
 echo " [System] Listening on: 0.0.0.0:${PORT}"
+echo " [System] Routing: Forced IPv4 (Railway Compatible)"
 echo " [System] Service Status: Active & Ready"
 echo "=========================================================="
 
-# اجرای مستقیم با حالت دیباگ کامل جهت مشاهده دقیق هندشیک تلگرام
-exec /usr/local/bin/sys-daemon simple-run --debug "0.0.0.0:${PORT}" "${KEY}"
+# اجبار روتینگ تلگرام به IPv4 برای هماهنگی با شبکه ریل‌وی
+exec /usr/local/bin/sys-daemon simple-run --debug --prefer-ip=prefer-ipv4 "0.0.0.0:${PORT}" "${KEY}"
