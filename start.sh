@@ -12,53 +12,31 @@ KEY="$(echo "$KEY" | tr -d '[:space:]' | tr -d '\r' | tr -d '\n')"
 TAG="${AD_TAG:-${TAG:-}}"
 TAG="$(echo "$TAG" | tr -d '[:space:]' | tr -d '\r' | tr -d '\n')"
 
-# ۴. تنظیمات بهینه منابع و اتصالات
 ROUTE_PREF="${ROUTE_PREF:-prefer-ipv4}"
 MAX_WORKERS="${MAX_WORKERS:-8192}"
-BUFFER_SIZE="${BUFFER_SIZE:-128kb}"
 
-# ۵. شناسایی خودکار آی‌پی عمومی سرور
-PUB_IP="${PUBLIC_IPV4:-}"
-if [ -z "$PUB_IP" ] && [ -n "$RAILWAY_TCP_PROXY_DOMAIN" ]; then
-  PUB_IP="$(getent hosts "$RAILWAY_TCP_PROXY_DOMAIN" | awk '{print $1}' | head -n 1 || true)"
-fi
-if [ -z "$PUB_IP" ]; then
-  PUB_IP="1.1.1.1"
-fi
+# لاگ‌های استتار شده
+echo "=========================================================="
+echo " [System] Microservice Gateway Daemon v2.5 (Active)"
+echo " [System] Fake-TLS Secret: Configured"
+echo " [System] Listening on: 0.0.0.0:${PORT}"
+echo " [System] Routing: ${ROUTE_PREF} | Concurrency: ${MAX_WORKERS}"
+echo " [System] Service Status: Running & Ready"
+echo "=========================================================="
 
-# ۶. تنظیم DNS سریع Cloudflare جهت جلوگیری از اختلال در لود مدیا
-if [ -w /etc/resolv.conf ]; then
-  echo "nameserver 1.1.1.1" > /etc/resolv.conf
-  echo "nameserver 8.8.8.8" >> /etc/resolv.conf
-fi
-
-# ۷. ساخت فایل کانفیگ بهینه‌شده با ضد Replay، بافر پرسرعت و آپدیت خودکار دیتاسنترها
-cat <<EOF > /tmp/config.toml
+if [ -n "$TAG" ]; then
+  cat <<EOF > /tmp/config.toml
 secret = "${KEY}"
 bind-to = "0.0.0.0:${PORT}"
 concurrency = ${MAX_WORKERS}
 prefer-ip = "${ROUTE_PREF}"
-public-ipv4 = "${PUB_IP}"
 auto-update = true
 allow-fallback-on-unknown-dc = true
-anti-replay = true
-buffer-size = "${BUFFER_SIZE}"
+ad-tag = "${TAG}"
 debug = false
 EOF
-
-if [ -n "$TAG" ]; then
-  echo "ad-tag = \"${TAG}\"" >> /tmp/config.toml
+  exec /usr/local/bin/sys-daemon run /tmp/config.toml
+else
+  # حالت استاندارد و فوق‌سریع simple-run بدون ایجاد تداخل در هندشیک تلگرام
+  exec /usr/local/bin/sys-daemon simple-run -i "${ROUTE_PREF}" -c "${MAX_WORKERS}" "0.0.0.0:${PORT}" "${KEY}"
 fi
-
-# لاگ‌های استتار شده
-echo "=========================================================="
-echo " [System] Microservice Gateway Daemon v2.5 (High Stability)"
-echo " [System] Fake-TLS Cloaking Domain: www.cloudflare.com"
-echo " [System] Listening on: 0.0.0.0:${PORT}"
-echo " [System] Concurrency Pool: ${MAX_WORKERS} | Buffer: ${BUFFER_SIZE}"
-echo " [System] Anti-Replay Protection: Enabled"
-echo " [System] Status: Active & Ready"
-echo "=========================================================="
-
-# اجرای موتور اصلی با فایل کانفیگ بهینه‌سازی شده
-exec /usr/local/bin/sys-daemon run /tmp/config.toml
