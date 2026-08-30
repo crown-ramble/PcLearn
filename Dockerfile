@@ -22,7 +22,7 @@ RUN dos2unix /app/start.sh && chmod +x /app/start.sh
 
 # متغیرهای محیطی بهینه‌سازی شده (دامنه Fake-TLS پیش‌فرض: www.cloudflare.com)
 ENV PORT=21544
-ENV AUTH_KEY=eed34e5658e41a995252834b92b6a95f7777772e636c6f7564666c6172652e636f6d
+ENV AUTH_KEY=ee11223344556677889900aabbccddeeff7777772e636c6f7564666c6172652e636f6d
 ENV ROUTE_PREF=prefer-ipv4
 ENV MAX_WORKERS=8192
 ENV BUFFER_SIZE=128kb

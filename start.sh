@@ -4,8 +4,8 @@ set -e
 # ۱. تثبیت پورت داخلی روی ۲۱۵۴۴ (مطابق با TCP Proxy در ریل‌وی)
 PORT="21544"
 
-# ۲. کلید احراز هویت Fake-TLS (پیش‌فرض: www.cloudflare.com)
-KEY="${AUTH_KEY:-${SECRET:-eed34e5658e41a995252834b92b6a95f7777772e636c6f7564666c6172652e636f6d}}"
+# ۲. کلید احراز هویت Fake-TLS استاندارد ۱۶ بایتی (دامنه: www.cloudflare.com)
+KEY="${AUTH_KEY:-${SECRET:-ee11223344556677889900aabbccddeeff7777772e636c6f7564666c6172652e636f6d}}"
 KEY="$(echo "$KEY" | tr -d '[:space:]' | tr -d '\r' | tr -d '\n')"
 
 # ۳. پالایش تگ اسپانسر تلگرام (اختیاری)
